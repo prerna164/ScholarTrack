@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="/projects">← All projects</a>
+
+    <div class="top">
+        <h1>{{ p.title }}</h1>
+
+        <a class="button" href="/projects/{{ p.id }}/edit">
+            Edit project
+        </a>
+    </div>
+
+    <span class="badge">
+        {{ p.status }}
+    </span>
+
+    <p class="muted">
+        Owner: {{ p.owner }} ·
+        Updated {{ p.updated_at[:19].replace('T', ' ') }} UTC
+    </p>
+
+    <div class="card">
+        <h2>Project brief</h2>
+
+        <p style="white-space: pre-wrap">{{ p.summary }}</p>
+
+        <small>{{ p.keywords }}</small>
+
+        <h2>{{ p.completion }}% complete</h2>
+
+        <progress
+            max="100"
+            value="{{ p.completion }}"
+        ></progress>
+
+        <small>
+            Status is set independently from completion.
+        </small>
+    </div>
+
+    <div class="two">
+        <section>
+            <h2>Add progress update</h2>
+
+            <form
+                method="post"
+                action="/projects/{{ p.id }}/progress"
+                class="card"
+            >
+                <label for="note">Progress note</label>
+
+                <textarea
+                    id="note"
+                    name="note"
+                    required
+                    minlength="3"
+                    maxlength="5000"
+                ></textarea>
+
+                <label for="percentage">
+                    Completion (%)
+                </label>
+
+                <input
+                    id="percentage"
+                    type="number"
+                    name="percentage"
+                    min="0"
+                    max="100"
+                    required
+                    value="{{ p.completion }}"
+                >
+
+                <label for="actor">Your name</label>
+
+                <input
+                    id="actor"
+                    name="actor"
+                    required
+                    minlength="2"
+                    maxlength="100"
+                >
+
+                <p>
+                    <button>Record update</button>
+                </p>
+            </form>
+
+            <h2>Progress notes</h2>
+
+            {% for u in updates %}
+                <div class="card">
+                    <strong>
+                        {{ u.percentage }}% · {{ u.actor }}
+                    </strong>
+
+                    <p>{{ u.note }}</p>
+
+                    <small>
+                        {{ u.created_at }} UTC
+                    </small>
+                </div>
+            {% else %}
+                <p class="muted">
+                    No updates recorded yet.
+                </p>
+            {% endfor %}
+        </section>
+
+        <section>
+            <h2>Activity history</h2>
+
+            {% for a in activities %}
+                <div class="card">
+                    <strong>
+                        {{ a.actor }} · {{ a.action }}
+                    </strong>
+
+                    <p>
+                        <small>
+                            {{ a.created_at }} UTC
+                        </small>
+                    </p>
+
+                    <pre>{{ a.changes }}</pre>
+                </div>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock %}

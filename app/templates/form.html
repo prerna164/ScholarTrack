@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="eyebrow">
+        Project workspace
+    </div>
+
+    <h1>
+        {{ 'Edit project' if editing else 'Create a project' }}
+    </h1>
+
+    {% if errors %}
+        <div class="error" role="alert">
+            {% for e in errors %}
+                <div>{{ e }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="card">
+        {% for field, label, min, max in [
+            ('title', 'Project title', 3, 160),
+            ('owner', 'Project owner', 2, 100),
+            ('keywords', 'Keywords (comma separated)', 0, 300)
+        ] %}
+            <label for="{{ field }}">
+                {{ label }}
+            </label>
+
+            <input
+                id="{{ field }}"
+                name="{{ field }}"
+                value="{{ data.get(field, '') }}"
+                minlength="{{ min }}"
+                maxlength="{{ max }}"
+                {% if min %}required{% endif %}
+            >
+        {% endfor %}
+
+        <label for="summary">Summary</label>
+
+        <textarea
+            id="summary"
+            name="summary"
+            required
+            minlength="20"
+            maxlength="10000"
+        >{{ data.get('summary', '') }}</textarea>
+
+        <label for="status">Status</label>
+
+        <select id="status" name="status">
+            {% for s in ['planned', 'ongoing', 'completed'] %}
+                <option
+                    {% if data.get('status', 'ongoing') == s %}
+                        selected
+                    {% endif %}
+                >{{ s }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="actor">
+            Your name (recorded in activity history)
+        </label>
+
+        <input
+            id="actor"
+            name="actor"
+            required
+            minlength="2"
+            maxlength="100"
+            value="{{ data.get('actor', '') }}"
+        >
+
+        <p>
+            <button>Save project</button>
+            <a href="/projects">Cancel</a>
+        </p>
+    </form>
+{% endblock %}

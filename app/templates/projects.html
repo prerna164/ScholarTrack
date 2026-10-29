@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="eyebrow">
+        Knowledge base
+    </div>
+
+    <div class="top">
+        <h1>Project records</h1>
+
+        <a class="button" href="/projects/new">
+            + New project
+        </a>
+    </div>
+
+    <p class="muted">
+        Search titles, summaries and keywords
+        using TF-IDF text similarity.
+    </p>
+
+    <form class="search">
+        <input
+            name="q"
+            value="{{ q }}"
+            placeholder="Try: water quality sensors"
+            aria-label="Search projects"
+            maxlength="1000"
+        >
+
+        <button>Search</button>
+    </form>
+
+    <p>
+        {{ results|length }} record(s)
+
+        {% if q.strip() %}
+            matching “{{ q }}” · Highest similarity first
+        {% endif %}
+    </p>
+
+    {% for p, score in results %}
+        <a class="card record" href="/projects/{{ p.id }}">
+            <div class="top">
+                <span class="badge">
+                    {{ p.status }}
+                </span>
+
+                {% if score is not none %}
+                    <small>
+                        {{ '%.1f'|format(score * 100) }}%
+                        text similarity
+                    </small>
+                {% endif %}
+            </div>
+
+            <h2>{{ p.title }}</h2>
+
+            <p>{{ p.summary }}</p>
+
+            <small>
+                {{ p.owner }} · {{ p.keywords }}
+            </small>
+        </a>
+    {% else %}
+        <div class="card">
+            No matching projects.
+            Try a different keyword or broader topic.
+        </div>
+    {% endfor %}
+{% endblock %}

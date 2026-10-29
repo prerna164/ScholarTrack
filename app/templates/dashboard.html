@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="eyebrow">
+        Research operations / Overview
+    </div>
+
+    <div class="top">
+        <div>
+            <h1>A clearer view of your research.</h1>
+
+            <p class="muted">
+                Track project records, review overlaps,
+                and keep progress visible.
+            </p>
+        </div>
+
+        <a class="button" href="/projects/new">
+            + New project
+        </a>
+    </div>
+
+    <div class="grid">
+        {% for label, value in [
+            ('Total projects', total),
+            ('Ongoing', counts.get('ongoing', 0)),
+            ('Completed', counts.get('completed', 0))
+        ] %}
+            <div class="card">
+                <small>{{ label }}</small>
+
+                <div class="metric">
+                    {{ value }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h2>Recently updated</h2>
+
+    {% for p in recent %}
+        <a class="card record" href="/projects/{{ p.id }}">
+            <span class="badge">
+                {{ p.status }}
+            </span>
+
+            <h2>{{ p.title }}</h2>
+
+            <p class="muted">
+                {{ p.owner }} ·
+                Updated {{ p.updated_at[:19].replace('T', ' ') }} UTC
+            </p>
+        </a>
+    {% else %}
+        <div class="card">
+            No projects yet. Create your first record.
+        </div>
+    {% endfor %}
+{% endblock %}
